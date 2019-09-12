@@ -1,0 +1,148 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+}
+
+group 'com.sultanofcardio'
+version '1.0.0'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations {
+    doclava
+}
+
+jar {
+    baseName = "$project.name"
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    baseName = "${project.name}"
+    version = version
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    baseName = "${project.name}"
+    version = version
+
+    from sourceSets.main.allSource
+}
+
+assemble.dependsOn(sourcesJar, javadocJar)
+
+publishing {
+    repositories {
+        maven {
+            name "sultanofcardio"
+            credentials {
+                username "${sultanofcardioUser}"
+                password "${sultanofcardioPassword}"
+            }
+            url "${sultanofcardioUrl}"
+        }
+
+        maven {
+            name "kiosk-mixed"
+            credentials {
+                username "${kioskMixedUser}"
+                password "${kioskMixedPassword}"
+            }
+            url "${kioskMixedUrl}"
+        }
+    }
+
+    publications {
+        binary(MavenPublication) {
+            artifactId "${project.name}"
+            version version
+            from components.java
+            artifact javadocJar
+        }
+
+        snapshot(MavenPublication) {
+            artifactId "${project.name}"
+            version "${version}-SNAPSHOT"
+            from components.java
+            artifact javadocJar
+        }
+
+        full(MavenPublication) {
+            artifactId "${project.name}"
+            version version
+            from components.java
+            artifact javadocJar
+            artifact sourcesJar
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'https://repo.sultanofcardio.com/artifactory/sultanofcardio'
+    }
+    maven {url 'http://clojars.org/repo/'}
+}
+
+dependencies {
+    doclava 'com.google.doclava:doclava:1.0.6'
+    doclava 'org.jetbrains:annotations:16.0.1'
+
+    implementation 'org.json:json:20180130'
+    implementation 'org.jetbrains:annotations:16.0.1'
+
+    compileOnly 'com.google.guava:guava:23.0'
+    compileOnly 'commons-codec:commons-codec:1.11'
+    compileOnly 'org.apache.commons:commons-lang3:3.7'
+    compileOnly 'com.fasterxml.jackson.core:jackson-annotations:2.9.6'
+    compileOnly 'org.mindrot:jbcrypt:0.4'
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    compileOnly 'org.apache.tomee:javaee-api:7.0-1'
+    compileOnly 'org.apache.geronimo.javamail:geronimo-javamail_1.4_mail:1.9.0-alpha-2'
+
+    compileOnly 'org.glassfish.jersey.core:jersey-client:2.27'
+    compileOnly 'javax.ws.rs:javax.ws.rs-api:2.1'
+    compileOnly 'org.apache.cxf:cxf-rt-frontend-jaxrs:3.2.0'
+    compileOnly 'org.apache.cxf:cxf-rt-rs-client:3.2.0'
+    compileOnly 'com.oracle:ojdbc6:sultan'
+    compileOnly 'mysql:mysql-connector-java:5.1.45'
+    compileOnly 'com.microsoft.sqlserver:sqljdbc4:4.0'
+    compileOnly 'postgresql:postgresql:9.1-901-1.jdbc4'
+    compileOnly 'org.xerial:sqlite-jdbc:3.27.2.1'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'okio:okio:1.14.1'
+    testImplementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    testImplementation 'org.apache.geronimo.javamail:geronimo-javamail_1.4_mail:1.9.0-alpha-2'
+    testImplementation 'org.apache.commons:commons-lang3:3.7'
+    testImplementation 'commons-codec:commons-codec:1.11'
+    testImplementation 'ch.vorburger.mariaDB4j:mariaDB4j:2.4.0'
+    testImplementation 'com.oracle:ojdbc6:sultan'
+    testImplementation 'mysql:mysql-connector-java:5.1.45'
+    testImplementation 'com.microsoft.sqlserver:sqljdbc4:4.0'
+    testImplementation 'postgresql:postgresql:9.1-901-1.jdbc4'
+    testImplementation 'org.xerial:sqlite-jdbc:3.27.2.1'
+}
+
+task generateJavadoc(type: Javadoc, dependsOn: project.configurations.doclava) {
+    failOnError = true
+    title = null
+    source = sourceSets.main.java.srcDirs
+    options.overview = "src/overview.html"
+    options.doclet = "com.google.doclava.Doclava"
+    options.docletpath = configurations.doclava.files.asType(List)
+    classpath += sourceSets.main.runtimeClasspath
+    destinationDir = file("build/docs/javadoc/${version}")
+}
+
