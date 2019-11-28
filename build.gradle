@@ -1,16 +1,20 @@
+group 'com.sultanofcardio'
+version '1.0.0'
+
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+apply plugin: 'kotlin'
+
 buildscript {
+    ext.kotlin_version = '1.3.61'
     repositories {
         mavenCentral()
         jcenter()
     }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
-
-group 'com.sultanofcardio'
-version '1.0.0'
-
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -99,6 +103,7 @@ dependencies {
     doclava 'com.google.doclava:doclava:1.0.6'
     doclava 'org.jetbrains:annotations:16.0.1'
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.json:json:20180130'
     implementation 'org.jetbrains:annotations:16.0.1'
 
@@ -146,3 +151,9 @@ task generateJavadoc(type: Javadoc, dependsOn: project.configurations.doclava) {
     destinationDir = file("build/docs/javadoc/${version}")
 }
 
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
