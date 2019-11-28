@@ -1,6 +1,7 @@
 package com.sultanofcardio.database;
 
 import com.sultanofcardio.database.sql.Database;
+import com.sultanofcardio.database.sql.statement.Insert;
 import com.sultanofcardio.database.sql.statement.Select;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -8,6 +9,7 @@ import org.junit.Test;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 import static com.sultanofcardio.database.sql.types.Types.Oracle;
 import static com.sultanofcardio.database.sql.types.Types.PostgreSQL;
@@ -75,7 +77,7 @@ public class OracleTest {
     public void oracleFormatSelect(){
         Database database = Database.getInstance("oracledb");
 
-        Select<?> select = database.select()
+        Select select = database.select()
                 .from("SOME_TABLE")
                 .where("id", 24)
                 .limit(1);
@@ -88,6 +90,26 @@ public class OracleTest {
 
         assertEquals("SELECT * FROM SOME_TABLE WHERE id = 24 AND ROWNUM <= 1".length(), selectQuery.length());
         assertEquals("SELECT * FROM SOME_TABLE WHERE id = 24 AND ROWNUM <= 1", selectQuery);
+    }
+
+    @Test
+    public void oracleFormatInsert(){
+        Database database = Database.getInstance("oracledb");
+
+        Insert select = database.insert()
+                .into("table")
+                .value("column1", "value1")
+                .value("column2", 0)
+                .value("column3", 0.51)
+                .value("column4", false)
+                .value("column5", new Date())
+                .value("column6", null);
+
+        String selectQuery = select.toString();
+
+        assertNotNull(selectQuery);
+
+        System.out.println(selectQuery);
     }
 
 

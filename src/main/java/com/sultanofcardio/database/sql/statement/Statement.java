@@ -148,11 +148,9 @@ public abstract class Statement<T extends Statement<?>> {
      * @return The escaped value
      */
     public static String escape(Object value){
-        String sValue = value.toString();
+        String sValue = value == null? "null" : value.toString();
 
-        if(Timestamp.class.isAssignableFrom(value.getClass()))
-            sValue = value.toString();
-        else if(Date.class.isAssignableFrom(value.getClass()))
+        if(value != null && Date.class.isAssignableFrom(value.getClass()))
             sValue = formatDate((Date)value);
 
         return sValue.replace("'", "''");

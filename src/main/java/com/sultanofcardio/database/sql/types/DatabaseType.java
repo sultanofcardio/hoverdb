@@ -59,7 +59,9 @@ public abstract class DatabaseType {
 
             String formatString = "%s = ";
 
-            if((String.class.isAssignableFrom(value.getClass()) ||
+            if(value == null)
+                formatString += "%s";
+            else if((String.class.isAssignableFrom(value.getClass()) ||
                     java.util.Date.class.isAssignableFrom(value.getClass()))){
                 formatString += "'%s'";
             } else {

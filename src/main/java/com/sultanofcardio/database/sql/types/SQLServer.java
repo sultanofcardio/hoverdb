@@ -133,8 +133,8 @@ public final class SQLServer extends DatabaseType {
             String columnName = columnNameIterator.next();
             Object value = setConditions.get(columnName);
 
-            String formatString = (String.class.isAssignableFrom(value.getClass()) ||
-                    java.util.Date.class.isAssignableFrom(value.getClass())) ? "%s = '%s'" : "%s = %s";
+            String formatString = (value != null && (String.class.isAssignableFrom(value.getClass()) ||
+                    java.util.Date.class.isAssignableFrom(value.getClass()))) ? "%s = '%s'" : "%s = %s";
 
             if(columnNameIterator.hasNext())
                 result.append(String.format(String.format("%s, ", formatString), columnName, escape(value)));
@@ -217,8 +217,8 @@ public final class SQLServer extends DatabaseType {
 
             Object value =  columnValues.get(columnNames[i]);
 
-            String formatString = (String.class.isAssignableFrom(value.getClass()) ||
-                    java.util.Date.class.isAssignableFrom(value.getClass())) ? "'%s'" : "%s";
+            String formatString = (value != null && (String.class.isAssignableFrom(value.getClass()) ||
+                    java.util.Date.class.isAssignableFrom(value.getClass()))) ? "'%s'" : "%s";
 
             if(i != columnNames.length - 1)
                 valuesString.append(String.format("%s, ", String.format(formatString, escape(value))));
