@@ -159,7 +159,7 @@ public class Database {
      */
     public ResultSet execute(@Language("SQL") String sql){
         Connection connection = getConnection();
-        PreparedStatement statement;
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
@@ -169,6 +169,11 @@ public class Database {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            if(statement != null){
+                try {statement.close(); } catch (Exception ignored){}
+            }
+
+            try {connection.close(); } catch (Exception ignored){}
         }
 
         return resultSet;
@@ -211,12 +216,12 @@ public class Database {
             e.printStackTrace();
         } finally {
 
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (statement != null) {
+                try { statement.close(); } catch (Exception ignored){}
+            }
+
+            if (connection != null) {
+                try { connection.close(); } catch (Exception ignored){}
             }
 
         }
