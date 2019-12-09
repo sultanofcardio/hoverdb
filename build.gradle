@@ -1,5 +1,5 @@
 group 'com.sultanofcardio'
-version '1.0.1'
+version '2.0.0'
 
 apply plugin: 'idea'
 apply plugin: 'maven-publish'

@@ -21,7 +21,7 @@ away.
 <dependency>
     <groupId>com.sultanofcardio</groupId>
         <artifactId>hoverdb</artifactId>
-    <version>1.0.1</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 Or in your build.gradle file:
@@ -31,7 +31,7 @@ repositories {
     maven { url "https://repo.sultanofcardio.com/artifactory/sultanofcardio" }
 }
 
-implementation 'com.sultanofcardio:hoverdb:1.0.1'
+implementation 'com.sultanofcardio:hoverdb:2.0.0'
 ``` 
 
 Also be sure to add your particular database driver as a dependency. e.g. MySQL:
