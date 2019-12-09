@@ -1,7 +1,7 @@
 package com.sultanofcardio.database.sql;
 
-import com.sultanofcardio.database.sql.statement.*;
 import com.sultanofcardio.database.sql.statement.Statement;
+import com.sultanofcardio.database.sql.statement.*;
 import com.sultanofcardio.database.sql.types.DatabaseType;
 import org.intellij.lang.annotations.Language;
 
@@ -157,7 +157,7 @@ public class Database {
      * @return The result of the query
      * @see #run(String)
      */
-    public ResultSet execute(@Language("SQL") String sql){
+    public ResourceSet execute(@Language("SQL") String sql){
         Connection connection = getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -176,7 +176,7 @@ public class Database {
             try {connection.close(); } catch (Exception ignored){}
         }
 
-        return resultSet;
+        return new ResourceSet(resultSet, statement);
     }
 
     /**
@@ -185,8 +185,47 @@ public class Database {
      * @return The result of the query
      * @see #run(Statement)
      */
-    public ResultSet execute(Query query){
+    public ResourceSet execute(Query<?> query){
         return execute(query.toString());
+    }
+
+    /**
+     * Execute a raw SQL query that auto-closes its resources
+     * @param sql Valid SQL code
+     * @param resultSetHandler Handle the result of the query
+     * @see #run(String)
+     */
+    public void execute(@Language("SQL") String sql, ResultSetHandler resultSetHandler) {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try(final Connection connection = getConnection()) {
+            if (connection != null) {
+                statement = connection.prepareStatement(sql);
+                resultSet = statement.executeQuery();
+                resultSetHandler.handle(resultSet);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if(resultSet != null) {
+                try {resultSet.close(); } catch (Exception ignored){}
+            }
+
+            if(statement != null) {
+                try {statement.close(); } catch (Exception ignored){}
+            }
+        }
+    }
+
+    /**
+     * Execute a query object. The result set will only be valid inside the handle method of the handler
+     * @param query A query object that formats to valid SQL code
+     * @param resultSetHandler Handle the result of the query
+     * @see #run(Statement)
+     */
+    public void execute(Query<?> query, ResultSetHandler resultSetHandler){
+        execute(query.toString(), resultSetHandler);
     }
 
     /**
@@ -235,7 +274,7 @@ public class Database {
      * @return The number of rows affected by the query
      * @see #execute(Query)
      */
-    public long run(Statement statement){
+    public long run(Statement<?> statement){
         return run(statement.toString());
     }
 

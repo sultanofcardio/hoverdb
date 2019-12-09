@@ -1,8 +1,9 @@
 package com.sultanofcardio.database.sql.statement;
 
 import com.sultanofcardio.database.sql.Database;
+import com.sultanofcardio.database.sql.ResourceSet;
+import com.sultanofcardio.database.sql.ResultSetHandler;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -30,7 +31,15 @@ public abstract class Query<T extends Query<?>> extends Statement<T> {
      * @return the result of this query
      * @see Database#execute(Query)
      */
-    public ResultSet execute(){
+    public ResourceSet execute(){
         return database.execute(this);
+    }
+
+    /**
+     * Execute this query on its internal database with a handler to capture results
+     * @see Database#execute(Query)
+     */
+    public void execute(ResultSetHandler handler){
+        database.execute(this, handler);
     }
 }
