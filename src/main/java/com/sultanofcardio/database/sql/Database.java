@@ -195,18 +195,17 @@ public class Database {
      * @param resultSetHandler Handle the result of the query
      * @see #run(String)
      */
-    public void execute(@Language("SQL") String sql, ResultSetHandler resultSetHandler) {
+    public void execute(@Language("SQL") String sql, ResultSetHandler resultSetHandler) throws SQLException {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
+        final Connection connection = getConnection();
 
-        try(final Connection connection = getConnection()) {
+        try {
             if (connection != null) {
                 statement = connection.prepareStatement(sql);
                 resultSet = statement.executeQuery();
                 resultSetHandler.handle(resultSet);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             if(resultSet != null) {
                 try {resultSet.close(); } catch (Exception ignored){}
@@ -224,7 +223,7 @@ public class Database {
      * @param resultSetHandler Handle the result of the query
      * @see #run(Statement)
      */
-    public void execute(Query<?> query, ResultSetHandler resultSetHandler){
+    public void execute(Query<?> query, ResultSetHandler resultSetHandler) throws SQLException {
         execute(query.toString(), resultSetHandler);
     }
 
@@ -234,7 +233,7 @@ public class Database {
      * @return The number of rows affected by the query
      * @see #execute(String)
      */
-    public long run(@Language("SQL") String sql){
+    public long run(@Language("SQL") String sql) throws SQLException {
         try {
             Class.forName(databaseType.getDriverName());
         } catch (ClassNotFoundException e) {
@@ -251,8 +250,6 @@ public class Database {
                 rowNum = statement.executeUpdate();
 
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
 
             if (statement != null) {
@@ -274,7 +271,7 @@ public class Database {
      * @return The number of rows affected by the query
      * @see #execute(Query)
      */
-    public long run(Statement<?> statement){
+    public long run(Statement<?> statement) throws SQLException {
         return run(statement.toString());
     }
 

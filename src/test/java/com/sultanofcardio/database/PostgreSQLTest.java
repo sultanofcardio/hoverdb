@@ -1,6 +1,7 @@
 package com.sultanofcardio.database;
 
 import com.sultanofcardio.database.sql.Database;
+import com.sultanofcardio.database.sql.ResourceSet;
 import com.sultanofcardio.database.sql.statement.Select;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -30,17 +31,17 @@ public class PostgreSQLTest {
     public void postgreSQLSelectTest() throws SQLException {
         Database database = Database.getInstance("postgresqldb");
 
-        ResultSet resultSet = database.select()
+        database.select()
                 .from("test_table")
-                .execute();
+                .execute((resultSet -> {
+                    assertNotNull(resultSet);
 
-        assertNotNull(resultSet);
-
-        while(resultSet.next()){
-            int id = resultSet.getInt("id");
-            String words = resultSet.getString("words");
-            System.out.println(String.format("Row{id=%s, words=%s}", id, words));
-        }
+                    while (resultSet.next()) {
+                        int id = resultSet.getInt("id");
+                        String words = resultSet.getString("words");
+                        System.out.println(String.format("Row{id=%s, words=%s}", id, words));
+                    }
+                }));
     }
 
     @Test

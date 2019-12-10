@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Database.query now returns ResourceSet - a holder class for both ResultSet and Statement
+- Made ResourceSet implement AutoCloseable
+- Stopped trapping SQLException is model classes. Callers will now have to handle SQLException in their code
 
 ## [1.0.1] - 2019-11-28
 ### Added

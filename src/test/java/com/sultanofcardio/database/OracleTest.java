@@ -32,17 +32,17 @@ public class OracleTest {
     public void oracleSelectTest() throws SQLException {
         Database database = Database.getInstance("oracledb");
 
-        ResultSet resultSet = database.select()
+        database.select()
                 .from("test_table")
-                .execute();
+                .execute(resultSet -> {
+                    assertNotNull(resultSet);
 
-        assertNotNull(resultSet);
-
-        while(resultSet.next()){
-            int id = resultSet.getInt("id");
-            String words = resultSet.getString("words");
-            System.out.println(String.format("Row{id=%s, words=%s}", id, words));
-        }
+                    while(resultSet.next()){
+                        int id = resultSet.getInt("id");
+                        String words = resultSet.getString("words");
+                        System.out.println(String.format("Row{id=%s, words=%s}", id, words));
+                    }
+                });
     }
 
     @Test
@@ -77,7 +77,7 @@ public class OracleTest {
     public void oracleFormatSelect(){
         Database database = Database.getInstance("oracledb");
 
-        Select select = database.select()
+        Select<?> select = database.select()
                 .from("SOME_TABLE")
                 .where("id", 24)
                 .limit(1);
@@ -96,7 +96,7 @@ public class OracleTest {
     public void oracleFormatInsert(){
         Database database = Database.getInstance("oracledb");
 
-        Insert select = database.insert()
+        Insert<?> select = database.insert()
                 .into("table")
                 .value("column1", "value1")
                 .value("column2", 0)

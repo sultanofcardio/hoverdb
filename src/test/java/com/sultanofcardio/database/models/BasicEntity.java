@@ -50,20 +50,22 @@ public class BasicEntity extends Entity<BasicEntity> {
 
     @Override
     public BasicEntity load(Object... args) throws SQLException {
-        ResultSet resultSet = getDatabase().execute(
+        getDatabase().execute(
                 getDatabase()
                         .select()
                         .from(getTableName())
-                        .where("id", args[0])
+                        .where("id", args[0]),
+                resultSet -> {
+                    if(resultSet == null || !resultSet.next()){
+                        throw new SQLException("Unable to find entity");
+                    }
+
+                    this.id = resultSet.getInt("id");
+                    this.words = resultSet.getString("words");
+
+                    resultSet.close();
+                }
         );
-        if(resultSet == null || !resultSet.next()){
-            throw new SQLException("Unable to find entity");
-        }
-
-        this.id = resultSet.getInt("id");
-        this.words = resultSet.getString("words");
-
-        resultSet.close();
 
         return this;
     }
@@ -71,30 +73,37 @@ public class BasicEntity extends Entity<BasicEntity> {
     @Override
     public List<BasicEntity> loadAll(Object... args) throws SQLException {
         List<BasicEntity> ts = new ArrayList<>();
-        ResultSet resultSet = getDatabase().execute(
+        getDatabase().execute(
                 getDatabase()
                 .select()
-                .from(getTableName())
+                .from(getTableName()),
+                resultSet -> {
+                    if(resultSet != null){
+                        while(resultSet.next()){
+                            BasicEntity basicEntity = new BasicEntity(getDatabase(), resultSet.getString("words"));
+                            basicEntity.setId(resultSet.getInt("id"));
+                            ts.add(basicEntity);
+                        }
+                    }
+                }
         );
-
-        if(resultSet != null){
-            while(resultSet.next()){
-                BasicEntity basicEntity = new BasicEntity(getDatabase(), resultSet.getString("words"));
-                basicEntity.setId(resultSet.getInt("id"));
-                ts.add(basicEntity);
-            }
-        }
 
         return ts;
     }
 
     @Override
     public long save() {
-        return getDatabase()
-                .insert()
-                .into(getTableName())
-                .value("words", words)
-                .run();
+        try {
+            return getDatabase()
+                    .insert()
+                    .into(getTableName())
+                    .value("words", words)
+                    .run();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return -1;
     }
 
     @Override

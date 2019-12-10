@@ -14,7 +14,7 @@ import static com.sultanofcardio.database.sql.types.Types.SQLite;
 public class EntityTest {
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws SQLException {
         FileDatabase sqlitedb = FileDatabase.connect("sqlite.db", SQLite, "sqlitedb");
         sqlitedb.run("CREATE TABLE IF NOT EXISTS test_table ( id INTEGER PRIMARY KEY AUTOINCREMENT, words VARCHAR(50) )");
         sqlitedb.run(String.format("INSERT INTO test_table(words) values('The time is now %s')", System.currentTimeMillis()));

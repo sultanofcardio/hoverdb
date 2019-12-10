@@ -4,6 +4,7 @@ import com.sultanofcardio.database.sql.Database;
 import com.sultanofcardio.database.sql.ResourceSet;
 import com.sultanofcardio.database.sql.ResultSetHandler;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -39,7 +40,7 @@ public abstract class Query<T extends Query<?>> extends Statement<T> {
      * Execute this query on its internal database with a handler to capture results
      * @see Database#execute(Query)
      */
-    public void execute(ResultSetHandler handler){
+    public void execute(ResultSetHandler handler) throws SQLException {
         database.execute(this, handler);
     }
 }

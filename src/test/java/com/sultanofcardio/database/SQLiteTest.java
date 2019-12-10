@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class SQLiteTest {
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws SQLException {
         FileDatabase sqldb = FileDatabase.connect("sqlite.db", SQLite, "sqlitedb");
         sqldb.run("CREATE TABLE IF NOT EXISTS test_table ( id INTEGER PRIMARY KEY AUTOINCREMENT, words VARCHAR(50) )");
         sqldb.run(String.format("INSERT INTO test_table(words) values('The time is now %s')", System.currentTimeMillis()));
@@ -31,17 +31,17 @@ public class SQLiteTest {
     public void sqliteSelectTest() throws SQLException {
         FileDatabase database = FileDatabase.getInstance("sqlitedb");
 
-        ResultSet resultSet = database.select()
+        database.select()
                 .from("test_table")
-                .execute();
+                .execute(resultSet -> {
+                    assertNotNull(resultSet);
 
-        assertNotNull(resultSet);
-
-        while(resultSet.next()){
-            int id = resultSet.getInt("id");
-            String words = resultSet.getString("words");
-            System.out.println(String.format("Row{id=%s, words=%s}", id, words));
-        }
+                    while(resultSet.next()){
+                        int id = resultSet.getInt("id");
+                        String words = resultSet.getString("words");
+                        System.out.println(String.format("Row{id=%s, words=%s}", id, words));
+                    }
+                });
     }
 
     @Test

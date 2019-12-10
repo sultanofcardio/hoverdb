@@ -4,6 +4,7 @@ import com.sultanofcardio.database.sql.Database;
 import com.sultanofcardio.database.sql.types.DatabaseType;
 import org.intellij.lang.annotations.Language;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -174,7 +175,7 @@ public abstract class Statement<T extends Statement<?>> {
      * @return the result of this statement
      * @see Database#run(Statement)
      */
-    public long run(){
+    public long run() throws SQLException {
         return database.run(this);
     }
 }
