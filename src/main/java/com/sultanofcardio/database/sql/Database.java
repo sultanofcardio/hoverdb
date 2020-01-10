@@ -136,7 +136,7 @@ public class Database {
      * This connection is maintained for the life of the JVM and you are limited to one connection per database
      * @return A connection instance, or null if a connection cannot be established
      */
-    public Connection getConnection(){
+    public Connection getConnection() throws SQLException {
         try {
             if(this.connection == null || this.connection.isClosed()) {
                 this.connection = null;
@@ -144,8 +144,9 @@ public class Database {
                 connection = DriverManager.getConnection(databaseType.getConnectionString(host, port, schema),
                         properties);
             }
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            throw new RuntimeException("Unable to instantiate connection driver " + databaseType.getDriverName());
         }
 
         return connection;
@@ -157,23 +158,24 @@ public class Database {
      * @return The result of the query
      * @see #run(String)
      */
-    public ResourceSet execute(@Language("SQL") String sql){
+    public ResourceSet execute(@Language("SQL") String sql) throws SQLException {
         Connection connection = getConnection();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
-        try {
-            if (connection != null) {
-                statement = connection.prepareStatement(sql);
-                resultSet = statement.executeQuery();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            if(statement != null){
-                try {statement.close(); } catch (Exception ignored){}
-            }
+        if (connection != null) {
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+        }
 
-            try {connection.close(); } catch (Exception ignored){}
+        if(statement != null){
+            try {statement.close(); } catch (Exception ignored){}
+        }
+        if(connection != null) {
+            try {
+                connection.close();
+            } catch (Exception ignored) {
+            }
         }
 
         return new ResourceSet(resultSet, statement);
@@ -185,7 +187,7 @@ public class Database {
      * @return The result of the query
      * @see #run(Statement)
      */
-    public ResourceSet execute(Query<?> query){
+    public ResourceSet execute(Query<?> query) throws SQLException {
         return execute(query.toString());
     }
 
@@ -200,20 +202,18 @@ public class Database {
         ResultSet resultSet = null;
         final Connection connection = getConnection();
 
-        try {
-            if (connection != null) {
-                statement = connection.prepareStatement(sql);
-                resultSet = statement.executeQuery();
-                resultSetHandler.handle(resultSet);
-            }
-        } finally {
-            if(resultSet != null) {
-                try {resultSet.close(); } catch (Exception ignored){}
-            }
+        if (connection != null) {
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            resultSetHandler.handle(resultSet);
+        }
 
-            if(statement != null) {
-                try {statement.close(); } catch (Exception ignored){}
-            }
+        if(resultSet != null) {
+            try { resultSet.close(); } catch (Exception ignored){}
+        }
+
+        if(statement != null) {
+            try { statement.close(); } catch (Exception ignored){}
         }
     }
 
@@ -234,32 +234,21 @@ public class Database {
      * @see #execute(String)
      */
     public long run(@Language("SQL") String sql) throws SQLException {
-        try {
-            Class.forName(databaseType.getDriverName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Connection connection = getConnection();
+        final Connection connection = getConnection();
         PreparedStatement statement = null;
         long rowNum = -1;
 
-        try {
-            if (connection != null) {
-                statement = connection.prepareStatement(sql);
-                rowNum = statement.executeUpdate();
+        if (connection != null) {
+            statement = connection.prepareStatement(sql);
+            rowNum = statement.executeUpdate();
+        }
 
-            }
-        } finally {
+        if (statement != null) {
+            try { statement.close(); } catch (Exception ignored){}
+        }
 
-            if (statement != null) {
-                try { statement.close(); } catch (Exception ignored){}
-            }
-
-            if (connection != null) {
-                try { connection.close(); } catch (Exception ignored){}
-            }
-
+        if (connection != null) {
+            try { connection.close(); } catch (Exception ignored){}
         }
 
         return rowNum;
