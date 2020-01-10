@@ -32,7 +32,7 @@ public abstract class Query<T extends Query<?>> extends Statement<T> {
      * @return the result of this query
      * @see Database#execute(Query)
      */
-    public ResourceSet execute(){
+    public ResourceSet execute() throws SQLException {
         return database.execute(this);
     }
 
