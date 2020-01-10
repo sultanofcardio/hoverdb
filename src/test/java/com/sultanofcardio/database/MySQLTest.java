@@ -3,7 +3,11 @@ package com.sultanofcardio.database;
 import ch.vorburger.exec.ManagedProcessException;
 import ch.vorburger.mariadb4j.DB;
 import com.sultanofcardio.database.sql.Database;
+import com.sultanofcardio.database.sql.Literal;
+import com.sultanofcardio.database.sql.statement.Delete;
+import com.sultanofcardio.database.sql.statement.Insert;
 import com.sultanofcardio.database.sql.statement.Select;
+import com.sultanofcardio.database.sql.statement.Update;
 import org.junit.*;
 
 import java.sql.ResultSet;
@@ -19,7 +23,7 @@ public class MySQLTest {
     @BeforeClass
     public static void setup() {
         try {
-            mysql = DB.newEmbeddedDB(3307);
+            mysql = DB.newEmbeddedDB(3340);
             mysql.start();
             mysql.createDB("db", "user", "");
             mysql.run("CREATE TABLE test_table ( id INT NOT NULL AUTO_INCREMENT, words VARCHAR(50), PRIMARY KEY (id))",
@@ -103,6 +107,74 @@ public class MySQLTest {
 
         assertEquals("SELECT * FROM SOME_TABLE WHERE id = 24".length(), selectQuery.length());
         assertEquals("SELECT * FROM SOME_TABLE WHERE id = 24", selectQuery);
+    }
+
+    @Test
+    public void mysqlFormatSelectLiteral(){
+        Database database = Database.getInstance("mysqldb");
+
+        Select<?> select = database.select()
+                .from("SOME_TABLE")
+                .where("date", new Literal("SYSDATE"));
+
+        String selectQuery = select.toString();
+
+        assertNotNull(selectQuery);
+
+        System.out.println(selectQuery);
+    }
+
+    @Test
+    public void mysqlFormatInsertLiteral(){
+        Database database = Database.getInstance("mysqldb");
+
+        Insert<?> insert = database.insert()
+                .into("SOME_TABLE")
+                .value("date", new Literal("SYSDATE"));
+
+        String insertQuery = insert.toString();
+
+        assertNotNull(insertQuery);
+
+        System.out.println(insertQuery);
+    }
+
+    @Test
+    public void mysqlFormatUpdateLiteral(){
+        Database database = Database.getInstance("mysqldb");
+
+        Update<?> update = database.update("SOME_TABLE")
+                .set("date", new Literal("SYSDATE"))
+                .where("date", new Literal("SYSDATE"));
+
+        String updateQuery = update.toString();
+
+        assertNotNull(updateQuery);
+
+        System.out.println(updateQuery);
+    }
+
+    @Test
+    public void mysqlFormatDeleteLiteral(){
+        Database database = Database.getInstance("mysqldb");
+
+        Delete<?> delete = database.delete()
+                .from("SOME_TABLE")
+                .where("date", new Literal("SYSDATE"));
+
+        String deleteQuery = delete.toString();
+
+        assertNotNull(deleteQuery);
+
+        System.out.println(deleteQuery);
+    }
+
+    @Test
+    public void formatLiteralTests(){
+        mysqlFormatSelectLiteral();
+        mysqlFormatInsertLiteral();
+        mysqlFormatDeleteLiteral();
+        mysqlFormatUpdateLiteral();
     }
 
 
