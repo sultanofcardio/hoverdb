@@ -38,7 +38,69 @@ public final class PostgreSQL extends DatabaseType {
 
     @Override
     public String formatSelect(Select<?> select) {
-        return null;
+        StringBuilder result = new StringBuilder(select.isDistinct() ? "SELECT DISTINCT " : "SELECT ");
+        String[] columns = select.getColumns();
+        if(columns != null && columns.length > 0) {
+            for (int i = 0; i < columns.length; i++) {
+                String column = columns[i];
+                if (i != columns.length - 1)
+                    result.append(String.format("%s, ", escape(column)));
+                else
+                    result.append(String.format("%s ", escape(column)));
+            }
+        } else {
+            result.append("* ");
+        }
+
+        String tableName = select.getTableName();
+
+        if(tableName == null || tableName.isEmpty())
+            throw new IllegalStateException("Table name not specified");
+
+        result.append(String.format("FROM %s ", tableName));
+
+        Map<String, Object> whereConditions = select.getWhereConditions();
+
+        boolean whereAppended = false;
+
+        if(whereConditions != null && !whereConditions.isEmpty()){
+            result.append("WHERE ");
+            whereAppended = true;
+            appendConditions(whereConditions, result);
+        }
+
+        List<String> stringWhereConditions = select.getStringWhereConditions();
+
+        if(stringWhereConditions != null && !stringWhereConditions.isEmpty()){
+            if(!whereAppended) {
+                result.append("WHERE ");
+                whereAppended = true;
+            } else result.append("AND ");
+
+            appendConditions(stringWhereConditions, result);
+        }
+
+        appendGenericConditions(select, result, !whereAppended);
+
+        List<String> orderBy = select.getOrderBy();
+
+        if(orderBy != null && orderBy.size() > 0){
+            result.append("ORDER BY ");
+            for(int i=0; i < orderBy.size(); i++) {
+                String orderByCondition = orderBy.get(i);
+                result.append(orderByCondition);
+
+                if(i != orderBy.size() - 1)
+                    result.append(", ");
+
+            }
+        }
+
+        if(select.getLimit() != -1){
+            result.append(String.format(" LIMIT %s ", select.getLimit()));
+        }
+
+        return result.toString().trim();
     }
 
     @Override

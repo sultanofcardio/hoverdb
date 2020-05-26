@@ -1,12 +1,12 @@
 group 'com.sultanofcardio'
-version '3.0.0'
+version '3.0.1'
 
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.3.61'
+    ext.kotlin_version = '1.3.72'
     repositories {
         mavenCentral()
         jcenter()
