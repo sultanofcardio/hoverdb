@@ -237,10 +237,6 @@ public class Database {
             try { statement.close(); } catch (Exception ignored){}
         }
 
-        if (connection != null) {
-            try { connection.close(); } catch (Exception ignored){}
-        }
-
         return rowNum;
     }
 
