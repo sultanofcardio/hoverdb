@@ -21,7 +21,7 @@ away.
 <dependency>
     <groupId>com.sultanofcardio</groupId>
         <artifactId>hoverdb</artifactId>
-    <version>3.0.1</version>
+    <version>3.1.0</version>
 </dependency>
 ```
 Or in your build.gradle file:
@@ -31,7 +31,7 @@ repositories {
     maven { url "https://repo.sultanofcardio.com/artifactory/sultanofcardio" }
 }
 
-implementation 'com.sultanofcardio:hoverdb:3.0.1'
+implementation 'com.sultanofcardio:hoverdb:3.1.0'
 ``` 
 
 Also be sure to add your particular database driver as a dependency. e.g. MySQL:
@@ -39,11 +39,11 @@ Also be sure to add your particular database driver as a dependency. e.g. MySQL:
 <dependency>
     <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-    <version>5.1.45</version>
+    <version>8.0.20</version>
 </dependency>
 ```
 ```groovy
-implementation 'mysql:mysql-connector-java:5.1.45'
+implementation 'mysql:mysql-connector-java:8.0.20'
 ```
 
 ## Usage
@@ -106,7 +106,7 @@ Database sqlitedb = FileDatabase.connect("sqlite.db", Types.SQLite, "sqlitedb");
 I don't think this feature offers any real benefits just yet, but you may decide that you want to take advantage of it 
 anyway.
 
-Create a class that extends Entity, and implement the required methods (constructor, load, loadAll, save, update, 
+Create a class extending Entity, and implement the required methods (constructor, load, loadAll, save, update, 
 delete, toString).
 
 Because you have to implement these yourself, the value of it becomes diminished. This functionality will be coming in 
@@ -116,7 +116,7 @@ the future.
 
 Support is built in for MySQL, SQLServer, SQLite and Oracle databases. 
 
-You can easily add additional database support by extending `DatabaseType` and implementing the formatting methods for 
+You can easily add a database by extending `DatabaseType` and implementing the formatting methods for 
 their particular syntax.
 
 This library uses [Semantic Versioning](http://semver.org/)
