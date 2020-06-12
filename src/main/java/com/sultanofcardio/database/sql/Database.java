@@ -168,16 +168,6 @@ public class Database {
             resultSet = statement.executeQuery();
         }
 
-        if(statement != null){
-            try {statement.close(); } catch (Exception ignored){}
-        }
-        if(connection != null) {
-            try {
-                connection.close();
-            } catch (Exception ignored) {
-            }
-        }
-
         return new ResourceSet(resultSet, statement);
     }
 
