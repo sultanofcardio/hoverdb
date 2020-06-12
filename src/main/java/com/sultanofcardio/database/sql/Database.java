@@ -137,13 +137,23 @@ public class Database {
      * @return A connection instance, or null if a connection cannot be established
      */
     public Connection getConnection() throws SQLException {
+        if(this.connection == null || this.connection.isClosed()) {
+            this.connection = createConnection();
+        }
+
+        return connection;
+    }
+
+    /**
+     * Create a brand new database connection. Used for transactions where the commit mode needs to be manipulated
+     * @return A new connection instance
+     */
+    protected Connection createConnection() throws SQLException {
+        Connection connection;
         try {
-            if(this.connection == null || this.connection.isClosed()) {
-                this.connection = null;
-                Class.forName(databaseType.getDriverName());
-                connection = DriverManager.getConnection(databaseType.getConnectionString(host, port, schema),
-                        properties);
-            }
+            Class.forName(databaseType.getDriverName());
+            connection = DriverManager.getConnection(databaseType.getConnectionString(host, port, schema),
+                    properties);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             throw new RuntimeException("Unable to instantiate connection driver " + databaseType.getDriverName());
