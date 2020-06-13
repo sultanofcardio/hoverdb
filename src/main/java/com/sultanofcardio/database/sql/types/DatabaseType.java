@@ -51,7 +51,7 @@ public abstract class DatabaseType {
      */
     public abstract String getConnectionString(String... args);
 
-    void appendConditions(Map<String, Object> conditions, StringBuilder result) {
+    protected void appendConditions(Map<String, Object> conditions, StringBuilder result) {
         Iterator<String> keyIterator = conditions.keySet().iterator();
         while (keyIterator.hasNext()){
             String condition =  keyIterator.next();
@@ -76,7 +76,7 @@ public abstract class DatabaseType {
         }
     }
 
-    void appendConditions(List<String> conditions, StringBuilder result) {
+    protected void appendConditions(List<String> conditions, StringBuilder result) {
         Iterator<String> valueIterator = conditions.iterator();
         while (valueIterator.hasNext()){
             String condition =  valueIterator.next();
@@ -89,7 +89,7 @@ public abstract class DatabaseType {
         }
     }
 
-    void appendGenericConditions(Statement<?> query, StringBuilder result, boolean appendWhere) {
+    protected void appendGenericConditions(Statement<?> query, StringBuilder result, boolean appendWhere) {
         List<String> genericConditions = query.getGenericConditions();
         if(genericConditions.size() > 0) {
             if(appendWhere) result.append("WHERE ");
