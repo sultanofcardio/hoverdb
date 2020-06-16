@@ -38,6 +38,10 @@ public class Database {
     protected Connection connection;
     protected static Map<String, Database> manager = new HashMap<>();
 
+    public Database copy(){
+        return new Database(schema, databaseType, host, port, username, password);
+    }
+
     /**
      * Get an instance of this Database connector.
      * @param schema the name of the database being used

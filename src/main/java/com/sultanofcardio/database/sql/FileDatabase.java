@@ -2,11 +2,11 @@ package com.sultanofcardio.database.sql;
 
 
 import com.sultanofcardio.database.sql.types.DatabaseType;
+import com.sultanofcardio.database.sql.types.Types;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import com.sultanofcardio.database.sql.types.Types;
 
 /**
  * This class represents a connection to a file database in a file system. <br><br>
@@ -23,7 +23,7 @@ public final class FileDatabase extends Database {
      * @param schema The name of the database schema
      * @param type Type of database (e.g. {@link Types#SQLite})
      */
-    private FileDatabase(String schema, DatabaseType type) {
+    FileDatabase(String schema, DatabaseType type) {
         super(schema, type);
     }
 
@@ -88,6 +88,11 @@ public final class FileDatabase extends Database {
         }
 
         return connection;
+    }
+
+    @Override
+    public Database copy() {
+        return FileDatabase.connect(path, databaseType, String.valueOf(System.currentTimeMillis()));
     }
 
     /**

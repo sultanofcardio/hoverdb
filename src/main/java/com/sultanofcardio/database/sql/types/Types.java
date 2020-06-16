@@ -28,4 +28,14 @@ public class Types {
      * SQLite file database support
      */
     public static final SQLite SQLite = new SQLite();
+
+    /**
+     * H2 file database support
+     */
+    public static final DatabaseType H2File = com.sultanofcardio.database.sql.types.H2File.INSTANCE;
+
+    /**
+     * H2 in-memory database support
+     */
+    public static final DatabaseType H2Mem = com.sultanofcardio.database.sql.types.H2Mem.INSTANCE;
 }

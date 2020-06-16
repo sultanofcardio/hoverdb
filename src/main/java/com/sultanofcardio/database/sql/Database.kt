@@ -6,7 +6,7 @@ package com.sultanofcardio.database.sql
  * @param work context in which to run queries. Be sure to use the database context provided
  */
 fun <T> Database.transaction(work: Database.() -> T): T {
-    val clone = Database(schema, databaseType, host, port, username, password)
+    val clone = copy()
     clone.getConnection().autoCommit = false
 
     try {
