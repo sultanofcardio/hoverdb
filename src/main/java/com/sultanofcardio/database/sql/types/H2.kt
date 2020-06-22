@@ -66,7 +66,7 @@ abstract class H2(name: String, connectionString: String, driverName: String): D
             val result = StringBuilder(String.format("UPDATE %s SET ", tableName))
             val setConditions = update.setConditions
             val columnNameIterator: Iterator<String> = setConditions.keys.iterator()
-            if (setConditions.isEmpty()) {
+            if (setConditions.isEmpty() && update.stringSetConditions.isEmpty()) {
                 throw IllegalStateException("No column values found to modify")
             } else {
                 var condition: String
@@ -81,7 +81,7 @@ abstract class H2(name: String, connectionString: String, driverName: String): D
                     }
                 }
                 val stringSetConditions = update.stringSetConditions
-                if (stringSetConditions.size > 0) {
+                if (stringSetConditions.size > 0 && setConditions.isNotEmpty()) {
                     result.append(", ")
                 }
                 for (i in stringSetConditions.indices) {

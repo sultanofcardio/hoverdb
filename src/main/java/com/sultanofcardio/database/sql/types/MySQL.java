@@ -122,7 +122,7 @@ public final class MySQL extends DatabaseType {
 
         Iterator<String> columnNameIterator = setConditions.keySet().iterator();
 
-        if(setConditions.isEmpty())
+        if(setConditions.isEmpty() && update.getStringSetConditions().isEmpty())
             throw new IllegalStateException("No column values found to modify");
 
         while (columnNameIterator.hasNext()){
@@ -140,7 +140,7 @@ public final class MySQL extends DatabaseType {
 
         List<String> stringSetConditions = update.getStringSetConditions();
 
-        if(stringSetConditions.size() > 0){
+        if(stringSetConditions.size() > 0  && !setConditions.isEmpty()){
             result.append(", ");
         }
 
