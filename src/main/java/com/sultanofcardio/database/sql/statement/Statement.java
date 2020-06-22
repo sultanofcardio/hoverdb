@@ -1,6 +1,7 @@
 package com.sultanofcardio.database.sql.statement;
 
 import com.sultanofcardio.database.sql.Database;
+import com.sultanofcardio.database.sql.Literal;
 import com.sultanofcardio.database.sql.types.DatabaseType;
 import org.intellij.lang.annotations.Language;
 
@@ -150,6 +151,9 @@ public abstract class Statement<T extends Statement<?>> {
      */
     public static String escape(Object value){
         String sValue = value == null? "null" : value.toString();
+
+        if(value instanceof Literal)
+            return sValue;
 
         if(value != null && Date.class.isAssignableFrom(value.getClass()))
             sValue = formatDate((Date)value);
